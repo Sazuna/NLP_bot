@@ -11,5 +11,10 @@ cd scripts
 python3 -m venv .env
 source .env/bin/activate
 
-### Installation du module discord dans l'environnement
+### Installation des modules nécessaires
 pip3 install -U discord.py
+pip3 install -U python-dotenv
+
+### Récupérer le token discord
+fichier non public, demander à Liza pour récupérer le fichier
+Sans ce fichier, impossible de connecter le bot !
