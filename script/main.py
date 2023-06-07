@@ -2,6 +2,7 @@
 import discord
 import os
 from dotenv import load_dotenv
+from reponses import reponds
 
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)#intents=discord.Intents.default())
@@ -22,9 +23,12 @@ async def on_ready():
 @client.event
 async def on_message(message):
 	print("Message reçu.")
-	print(message.content)
-	if message.content == "Ping":
-		await message.channel.send("Pong")
+	print(message.content) # Le contenu du message
+	print(message.author.id) # L'identifiant de l'auteur du message
+	#print(message.reference.message_id) # L'identifiant du message cité
+	reponse = reponds(message.content)
+	if reponse != None:
+		await message.channel.send(reponse)
 	
 
 if __name__ == "__main__":
