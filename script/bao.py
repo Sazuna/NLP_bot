@@ -24,6 +24,8 @@ nlp = spacy.load("fr_core_news_sm")
 # Si pas encore téléchargé nltk, décommenter :
 # nltk.download('punkt')
 
+stopwords_list = []
+
 # suppression des liens
 def del_urls(text):
 	return re.sub(r"https?://[a-zA-Z0-9\.\-,/\?:@&=+\$#]*", '', text, re.MULTILINE)
@@ -48,9 +50,12 @@ def lowercase(tokens):
 def del_stopwords(tokens, stopwords="stopwords.txt"):
 	if type(tokens) == str:
 		tokens = tokenize(tokens)
-	with open (stopwords, 'r') as stop:
-		stopwords = stop.readline().split()
-	return [token for token in tokens if token not in stopwords]
+
+	global stopwords_list
+	if len(stopwords_list) == 0:
+		with open (stopwords, 'r') as stop:
+			stopwords_list = stop.readline().split()
+	return [token for token in tokens if token not in stopwords_list]
 
 
 # lemmatisation (utilisation de spacy)
