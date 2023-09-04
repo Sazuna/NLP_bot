@@ -1,12 +1,15 @@
 import sys
-sys.path.insert(1, 'recherche_message/')
-import requete
+sys.path.append('data/')
+sys.path.append('preprocess/')
+import load_data
+import preprocess
 
-def reponds(message):
-	if message.strip()[:5] == "query":
-		ir.query(message[6:])
+def reponds(message, channels):
+	message = message.content
+	#if message.strip()[:5] == "query":
+	#	requete.query(message[6:], channels)
 	if message.strip()[:10] == "preprocess":
-		return requete.preprocess_message(message[10:].strip())
+		return preprocess.preprocess_message(message[10:].strip())
 	if message == "j'en ai marre":
 		return "moi aussi :("
 	if message == "Ping":
