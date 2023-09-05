@@ -30,6 +30,9 @@ stopwords_list = []
 def del_urls(text):
 	return re.sub(r"https?://[a-zA-Z0-9\.\-,/\?:@&=+\$#]*", '', text, re.MULTILINE)
 
+def del_mail(text):
+	return re.sub(r"[a-zA-Z0-9\.\-]+@([a-zA-Z0-9])+\.[a-zA-Z0-9]{2,4}$", '', text, re.MULTILINE)
+
 # suppression des chiffres
 def del_digits(text):
 	return ' '.join([c for c in text if not c.isdigit()])
@@ -66,8 +69,13 @@ def del_stopwords(tokens, stopwords="stopwords.txt"):
 def lemmatize(tokens):
 	if type(tokens) == list:
 		tokens = ' '.join(tokens)
-	doc = nlp(tokens)
-	return [token.lemma_ for token in doc]
+	try:
+		print(tokens)
+		doc = nlp(tokens)
+		return [token.lemma_ for token in doc]
+	except error:
+		print(error)
+		print(tokens)
 
 # racinisation
 # Attention, la racinisation supprime les majuscules des noms propres. Cela veut dire que si on racinise, pas besoin d'appeler la fonction lowercase.
@@ -83,6 +91,15 @@ def del_punct(tokens):
 	if type(tokens) == str:
 		tokens = tokenize(tokens)
 	return [token for token in tokens if token not in string.punctuation]
+
+# pour éviter les problèmes de manipulation de string et de documents
+def percent_encoding(text):
+	if type(text) == list:
+		text = ' '.join(text)
+	text = text.replace("'", "%27")
+	text = text.replace("\n", "%0A")
+	text = text.replace("\t", "%09")
+	return text
 
 
 # ngrams
@@ -105,6 +122,8 @@ def main(input_file, args):
 		text = f.read().strip()
 	if args.url == 1:
 		text = del_urls(text)
+	if args.mail == 1:
+		text = del_mail(text)
 	if args.lowercase == 1:
 		text = lowercase(text)
 
@@ -120,6 +139,8 @@ def main(input_file, args):
 		text = del_punct(text)
 	if args.digits == 1:
 		text = del_digits(text)
+	if args.encode == 1:
+		text = percent_encoding(text)
 
 	if args.ngram != None:
 		ngrams = n_grams(text, int(args.ngram[0]))
@@ -128,7 +149,6 @@ def main(input_file, args):
 			ngrams_output = args.ngram[1]
 		write_ngrams(ngrams_output, ngrams)
 	print(text)
-
 
 # Main function
 if __name__ == "__main__":
@@ -140,6 +160,8 @@ if __name__ == "__main__":
 	parser.add_argument("-p", "--punct", help="Remove punctuation", action="store_const", const=1)
 	parser.add_argument("-d", "--digits", help="Remove digits", action="store_const", const=1)
 	parser.add_argument("-u", "--url", help="Remove urls", action="store_const", const=1)
+	parser.add_argument("-e", "--encode", help="Percent encoding for certain special caracters", action="store_const", const=1)
+	parser.add_argument("-m", "--mail", help="Remove email address", action="store_const", const=1)
 
 	group = parser.add_mutually_exclusive_group(required=False)
 	group.add_argument("-L", "--lemmatize", help="Lemmatize", action="store_const", const=1)

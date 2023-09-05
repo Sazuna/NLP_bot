@@ -18,6 +18,9 @@ async def load_messages(channels, messages):
 	if len(messages) == 0:
 		messages.extend(messages_database.create_or_load_table())
 	for channel in channels:
+		if "bot" in channel.name:
+			print(channel.name + " is a bot channel. Messages are ignored in this channel.")
+			continue
 		last_saved_message_id = messages_database.get_last_saved_message_id(channel.id)
 		# Get the last message of the current channel using its id
 		last_saved_message = None
@@ -25,7 +28,7 @@ async def load_messages(channels, messages):
 			try:
 				last_saved_message = await channel.fetch_message(last_saved_message_id)
 			except:
-				print("The last saved message ({last_saved_message_id}) in channel {channel.id} hasn't been retrieved.")
+				print(f"The last saved message ({last_saved_message_id}) in channel {channel.id} hasn't been retrieved.")
 				last_saved_message = None
 
 		# Get history starting from the last saved message in our database
